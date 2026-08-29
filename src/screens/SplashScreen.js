@@ -6,28 +6,27 @@ import colors from "../theme/colors";
 
 SplashScreenNative.preventAutoHideAsync();
 
-export default function SplashScreen({ navigation }) {
-  const [fontsLoaded] = useFonts({
+export default function SplashScreen() {
+  const [fontsLoaded, fontError] = useFonts({
     "HankenGrotesk-ExtraBold": require("../../assets/font/HankenGrotesk-ExtraBold.ttf"),
     "JetBrainsMono-Bold": require("../../assets/font/JetBrainsMono-Bold.ttf"),
   });
 
+  useEffect(() => {
+    if (fontError) {
+      console.log("Font loading error:", fontError);
+    }
+  }, [fontError]);
+
+  const isReady = fontsLoaded || fontError;
+
   const onLayoutRootView = useCallback(async () => {
-    if (fontsLoaded) {
+    if (isReady) {
       await SplashScreenNative.hideAsync();
     }
-  }, [fontsLoaded]);
+  }, [isReady]);
 
-  useEffect(() => {
-    if (fontsLoaded) {
-      const timer = setTimeout(() => {
-        navigation.replace("Login");
-      }, 2000);
-      return () => clearTimeout(timer);
-    }
-  }, [fontsLoaded, navigation]);
-
-  if (!fontsLoaded) {
+  if (!isReady) {
     return null;
   }
 

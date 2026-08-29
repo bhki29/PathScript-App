@@ -75,9 +75,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
   },
   avatarWrap: {
-    width: 88,
-    height: 88,
-    borderRadius: 44,
+    width: 120,
+    height: 120,
+    borderRadius: 60,
     backgroundColor: colors.card,
     alignItems: "center",
     justifyContent: "center",

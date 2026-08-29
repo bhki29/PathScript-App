@@ -40,7 +40,7 @@ export default function HomeScreen({ navigation }) {
           <Ionicons name="person" size={22} color="#fff" />
         </View>
         <View style={{ marginLeft: 12 }}>
-          <Text style={styles.welcome}>WELCOME BACK</Text>
+          <Text style={styles.welcome}>Welcome</Text>
           <Text style={styles.name}>{user?.displayName || "Coder"}</Text>
         </View>
       </View>
@@ -119,28 +119,42 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingTop: 60,
   },
-  header: { flexDirection: "row", alignItems: "center", marginBottom: 28 },
+  header: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 28,
+    backgroundColor: "#272A43",
+    borderRadius: 16,
+    padding: 18,
+    marginTop: 10,
+  },
   avatar: {
-    width: 80,
-    height: 80,
+    width: 50,
+    height: 50,
     borderRadius: 50,
     backgroundColor: colors.primary,
     alignItems: "center",
     justifyContent: "center",
   },
-  welcome: { color: colors.textMuted, fontSize: 20, fontWeight: "600" },
-  name: { color: colors.text, fontSize: 18, fontWeight: "700" },
+  welcome: {
+    color: colors.text,
+    fontSize: 15,
+    fontFamily: "HankenGrotesk",
+  },
+  name: { color: colors.text, fontFamily: "HankenGrotesk", fontSize: 15 },
   sectionTitle: {
     color: colors.text,
     fontSize: 15,
-    fontWeight: "700",
-    marginBottom: 12,
+    fontFamily: "HankenGrotesk",
+    marginBottom: 8,
   },
   emptyText: { color: colors.textMuted, fontSize: 12, lineHeight: 18 },
   pathCard: {
     flexDirection: "row",
     alignItems: "center",
     backgroundColor: colors.card,
+    borderColor: "#5C5C5C",
+    borderWidth: 1,
     borderRadius: 16,
     padding: 14,
     marginBottom: 14,
@@ -149,7 +163,7 @@ const styles = StyleSheet.create({
     width: 90,
     height: 90,
     borderRadius: 12,
-    backgroundColor: colors.background,
+
     alignItems: "center",
     justifyContent: "center",
   },
@@ -157,18 +171,18 @@ const styles = StyleSheet.create({
     width: 70,
     height: 70,
   },
-  pathTitle: { color: colors.text, fontWeight: "700", fontSize: 14 },
+  pathTitle: { color: colors.text, fontWeight: "700", fontSize: 15 },
   pathDesc: {
     color: colors.textMuted,
-    fontSize: 11,
+    fontSize: 10,
     marginTop: 2,
     marginBottom: 8,
   },
   progressTrack: {
     height: 5,
-    borderRadius: 4,
-    backgroundColor: colors.border,
+    borderRadius: 5,
+    backgroundColor: "#2D3449",
     overflow: "hidden",
   },
-  progressFill: { height: 5, borderRadius: 4, backgroundColor: colors.primary },
+  progressFill: { height: 5, borderRadius: 4, backgroundColor: "#fff" },
 });

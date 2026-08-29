@@ -91,9 +91,11 @@ const styles = StyleSheet.create({
     width: "18%",
     aspectRatio: 1,
     borderRadius: 12,
-    backgroundColor: colors.card,
+    backgroundColor: "#293145",
+    borderColor: "#5C5C5C",
+    borderWidth: 1,
     alignItems: "center",
     justifyContent: "center",
   },
-  cellText: { color: colors.text, fontWeight: "700" },
+  cellText: { color: "#DAE2FD", fontWeight: "700", fontSize: 18 },
 });

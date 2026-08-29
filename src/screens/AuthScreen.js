@@ -113,100 +113,104 @@ export default function AuthScreen() {
         <Text style={styles.subtitle}>Code Your way to the top</Text>
       </View>
 
-      {/* tab login & register */}
-      <View style={styles.tabRow}>
-        <Animated.View
-          style={[
-            styles.tabIndicator,
-            { left: indicatorLeft, width: `${TAB_WIDTH_PERCENT * 100}%` },
-          ]}
-        />
-        <TouchableOpacity
-          style={styles.tabBtn}
-          onPress={() => switchMode("login")}
-        >
-          <Text
-            style={mode === "login" ? styles.tabTextActive : styles.tabText}
-          >
-            Login
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.tabBtn}
-          onPress={() => switchMode("register")}
-        >
-          <Text
-            style={mode === "register" ? styles.tabTextActive : styles.tabText}
-          >
-            Register
-          </Text>
-        </TouchableOpacity>
-      </View>
-
-      <Animated.View style={[styles.form, { opacity: fadeAnim }]}>
-        <Text style={styles.label}>EMAIL</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Masukkan email"
-          placeholderTextColor={colors.textMuted}
-          autoCapitalize="none"
-          keyboardType="email-address"
-          value={email}
-          onChangeText={setEmail}
-        />
-
-        {mode === "register" && (
-          <>
-            <Text style={styles.label}>USERNAME</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="Masukkan username"
-              placeholderTextColor={colors.textMuted}
-              autoCapitalize="none"
-              value={username}
-              onChangeText={setUsername}
-            />
-          </>
-        )}
-
-        <Text style={styles.label}>PASSWORD</Text>
-        <View style={styles.passwordRow}>
-          <TextInput
-            style={[styles.input, { flex: 1, marginBottom: 0 }]}
-            placeholder={
-              mode === "register" ? "Minimal 6 karakter" : "Masukkan password"
-            }
-            placeholderTextColor={colors.textMuted}
-            secureTextEntry={!showPassword}
-            value={password}
-            onChangeText={setPassword}
+      <View style={styles.formContainer}>
+        {/* tab login & register */}
+        <View style={styles.tabRow}>
+          <Animated.View
+            style={[
+              styles.tabIndicator,
+              { left: indicatorLeft, width: `${TAB_WIDTH_PERCENT * 100}%` },
+            ]}
           />
           <TouchableOpacity
-            style={styles.eyeBtn}
-            onPress={() => setShowPassword((v) => !v)}
+            style={styles.tabBtn}
+            onPress={() => switchMode("login")}
           >
-            <Ionicons
-              name={showPassword ? "eye-off" : "eye"}
-              size={20}
-              color={colors.textMuted}
-            />
+            <Text
+              style={mode === "login" ? styles.tabTextActive : styles.tabText}
+            >
+              Login
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.tabBtn}
+            onPress={() => switchMode("register")}
+          >
+            <Text
+              style={
+                mode === "register" ? styles.tabTextActive : styles.tabText
+              }
+            >
+              Register
+            </Text>
           </TouchableOpacity>
         </View>
 
-        <TouchableOpacity
-          style={styles.submitBtn}
-          onPress={handleSubmit}
-          disabled={loading}
-        >
-          {loading ? (
-            <ActivityIndicator color="#fff" />
-          ) : (
-            <Text style={styles.submitBtnText}>
-              {mode === "login" ? "Login" : "REGISTER"}
-            </Text>
+        <Animated.View style={[styles.form, { opacity: fadeAnim }]}>
+          <Text style={styles.label}>EMAIL</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Masukkan email"
+            placeholderTextColor={colors.textMuted}
+            autoCapitalize="none"
+            keyboardType="email-address"
+            value={email}
+            onChangeText={setEmail}
+          />
+
+          {mode === "register" && (
+            <>
+              <Text style={styles.label}>USERNAME</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="Masukkan username"
+                placeholderTextColor={colors.textMuted}
+                autoCapitalize="none"
+                value={username}
+                onChangeText={setUsername}
+              />
+            </>
           )}
-        </TouchableOpacity>
-      </Animated.View>
+
+          <Text style={styles.label}>PASSWORD</Text>
+          <View style={styles.passwordRow}>
+            <TextInput
+              style={[styles.input, { flex: 1, marginBottom: 0 }]}
+              placeholder={
+                mode === "register" ? "Minimal 6 karakter" : "Masukkan password"
+              }
+              placeholderTextColor={colors.textMuted}
+              secureTextEntry={!showPassword}
+              value={password}
+              onChangeText={setPassword}
+            />
+            <TouchableOpacity
+              style={styles.eyeBtn}
+              onPress={() => setShowPassword((v) => !v)}
+            >
+              <Ionicons
+                name={showPassword ? "eye-off" : "eye"}
+                size={20}
+                color={colors.textMuted}
+              />
+            </TouchableOpacity>
+          </View>
+
+          <TouchableOpacity
+            style={styles.submitBtn}
+            onPress={handleSubmit}
+            disabled={loading}
+          >
+            {loading ? (
+              <ActivityIndicator color="#1000AA" />
+            ) : (
+              <Text style={styles.submitBtnText}>
+                {mode === "login" ? "Login" : "REGISTER"}
+              </Text>
+            )}
+          </TouchableOpacity>
+        </Animated.View>
+      </View>
     </KeyboardAvoidingView>
   );
 }
@@ -218,6 +222,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     paddingTop: 60,
   },
+  formContainer: {
+    backgroundColor: "#161A2B",
+    borderRadius: 24,
+    padding: 24,
+    marginTop: 10,
+  },
+
   logoWrap: { alignItems: "center", marginBottom: 24 },
 
   logo: {
@@ -225,14 +236,23 @@ const styles = StyleSheet.create({
     height: 80,
     marginBottom: 5,
   },
-  title: { color: colors.text, fontSize: 22, fontWeight: "700" },
-  subtitle: { color: colors.textMuted, fontSize: 12, marginTop: 4 },
+  title: {
+    color: colors.text,
+    fontSize: 32,
+    fontWeight: "700",
+    fontFamily: "HankenGrotesk-ExtraBold",
+  },
+  subtitle: {
+    color: colors.textMuted,
+    fontSize: 12,
+    fontFamily: "JetBrainsMono-Bold",
+  },
   tabRow: {
     flexDirection: "row",
-    backgroundColor: colors.card,
+    backgroundColor: "#171F33",
     borderRadius: 14,
     padding: 4,
-    marginBottom: 24,
+    marginBottom: 20,
     overflow: "hidden",
   },
   tabIndicator: {
@@ -240,7 +260,7 @@ const styles = StyleSheet.create({
     top: 4,
     bottom: 4,
     borderRadius: 10,
-    backgroundColor: colors.primary,
+    backgroundColor: "#31394D",
   },
   tabBtn: {
     flex: 1,
@@ -249,34 +269,49 @@ const styles = StyleSheet.create({
     alignItems: "center",
     zIndex: 1,
   },
-  tabText: { color: colors.textMuted, fontWeight: "600" },
-  tabTextActive: { color: "#fff", fontWeight: "600" },
+  tabText: {
+    color: colors.textMuted,
+    fontWeight: "600",
+    fontFamily: "JetBrainsMono-Bold",
+    color: "#94949B",
+  },
+  tabTextActive: {
+    color: "#fff",
+    fontWeight: "600",
+    fontFamily: "JetBrainsMono-Bold",
+  },
   form: {},
   label: {
-    color: colors.textMuted,
-    fontSize: 11,
+    color: colors.text,
+    fontSize: 12,
+    fontFamily: "JetBrainsMono-Bold",
     fontWeight: "600",
     marginBottom: 6,
     marginTop: 12,
   },
   input: {
-    backgroundColor: colors.input || colors.card,
+    backgroundColor: colors.background,
     borderRadius: 12,
     paddingHorizontal: 16,
     paddingVertical: 14,
     color: colors.text,
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: "#2F364B",
     marginBottom: 4,
+    fontFamily: "JetBrainsMono-Bold",
   },
   passwordRow: { flexDirection: "row", alignItems: "center" },
   eyeBtn: { position: "absolute", right: 14 },
   submitBtn: {
-    backgroundColor: colors.primary,
+    backgroundColor: "#C0C1FF",
     borderRadius: 12,
     paddingVertical: 15,
     alignItems: "center",
     marginTop: 24,
   },
-  submitBtnText: { color: "#fff", fontWeight: "700", fontSize: 15 },
+  submitBtnText: {
+    color: "#1000AA",
+    fontSize: 15,
+    fontFamily: "JetBrainsMono-Bold",
+  },
 });
