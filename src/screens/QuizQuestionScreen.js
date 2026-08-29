@@ -15,16 +15,25 @@ import { Ionicons } from "@expo/vector-icons";
 import colors from "../theme/colors";
 import { db } from "../config/firebase";
 import { useAuth } from "../context/AuthContext";
-import { submitAnswer } from "../services/quizServices";
+import { submitAnswer, getLives } from "../services/quizServices";
 
 export default function QuizQuestionScreen({ route, navigation }) {
-  const { pathId, questionId, title } = route.params;
+  const { pathId, questionId, title, order } = route.params;
   const { user } = useAuth();
   const [question, setQuestion] = useState(null);
   const [selected, setSelected] = useState(null);
   const [loading, setLoading] = useState(true);
   const [resultVisible, setResultVisible] = useState(false);
   const [isCorrect, setIsCorrect] = useState(false);
+  const [lives, setLives] = useState(5);
+
+  useEffect(() => {
+    if (user) {
+      getLives(user.uid)
+        .then(setLives)
+        .catch(() => {});
+    }
+  }, [user]);
 
   useEffect(() => {
     const ref = doc(db, "learningPaths", pathId, "questions", questionId);
@@ -37,17 +46,31 @@ export default function QuizQuestionScreen({ route, navigation }) {
   }, [pathId, questionId]);
 
   const handleSubmit = async () => {
+    if (lives <= 0) {
+      Alert.alert(
+        "Nyawa habis",
+        "Nyawa kamu sudah habis. Tunggu nyawa terisi ulang atau coba lagi nanti.",
+      );
+      return;
+    }
     if (!selected) {
       Alert.alert("Pilih jawaban", "Pilih salah satu opsi dulu.");
       return;
     }
     const correct = selected === question.correctOptionId;
 
-    if (correct && user) {
+    if (user) {
       try {
-        await submitAnswer(user.uid, question.points || 5);
+        const livesAfter = await submitAnswer(
+          user.uid,
+          pathId,
+          question.order ?? order,
+          question.points || 5,
+          correct,
+        );
+        setLives(livesAfter);
       } catch (err) {
-        console.error("Gagal menyimpan poin:", err);
+        console.error("Gagal menyimpan progress:", err);
       }
     }
 
@@ -85,7 +108,7 @@ export default function QuizQuestionScreen({ route, navigation }) {
         <Text style={styles.headerTitle}>{title}</Text>
         <View style={styles.heartsBadge}>
           <Ionicons name="heart" size={14} color="#fff" />
-          <Text style={styles.heartsText}>5</Text>
+          <Text style={styles.heartsText}>{lives}</Text>
         </View>
       </View>
 
@@ -145,6 +168,9 @@ export default function QuizQuestionScreen({ route, navigation }) {
                 ? "Jawabanmu Tepat Sekali!"
                 : "Tidak apa-apa, yuk belajar lagi!"}
             </Text>
+            {!isCorrect && (
+              <Text style={styles.resultSubtitle}>Sisa nyawa: {lives}</Text>
+            )}
             <TouchableOpacity
               style={[
                 styles.resultBtn,
@@ -279,6 +305,14 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "700",
     textAlign: "center",
+    marginBottom: 20,
+  },
+  resultSubtitle: {
+    color: "#8B1E3F",
+    fontSize: 12,
+    fontWeight: "600",
+    textAlign: "center",
+    marginTop: -12,
     marginBottom: 20,
   },
   resultBtn: {

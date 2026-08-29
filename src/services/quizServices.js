@@ -1,11 +1,12 @@
 import {
   collection,
   getDocs,
+  getDoc,
   orderBy,
   query,
   doc,
   setDoc,
-  increment,
+  runTransaction,
 } from "firebase/firestore";
 import { db } from "../config/firebase";
 
@@ -23,10 +24,52 @@ export async function getQuestions(pathId) {
   return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
 }
 
-export async function submitAnswer(uid, points) {
-  await setDoc(
-    doc(db, "users", uid),
-    { points: increment(points) },
-    { merge: true },
-  );
+export async function getUnlockedOrder(uid, pathId) {
+  const snap = await getDoc(doc(db, "users", uid));
+  if (!snap.exists()) return 1;
+  const progress = snap.data().progress || {};
+  return progress[pathId] || 1;
+}
+
+export async function getLives(uid) {
+  const snap = await getDoc(doc(db, "users", uid));
+  if (!snap.exists()) return 5;
+  const lives = snap.data().lives;
+  return typeof lives === "number" ? lives : 5;
+}
+
+export async function submitAnswer(uid, pathId, order, points, correct) {
+  const userRef = doc(db, "users", uid);
+  let livesAfter = 5;
+
+  await runTransaction(db, async (transaction) => {
+    const snap = await transaction.get(userRef);
+    const data = snap.exists() ? snap.data() : {};
+    const currentPoints = data.points || 0;
+    const progress = data.progress || {};
+    const currentUnlocked = progress[pathId] || 1;
+    const currentLives = typeof data.lives === "number" ? data.lives : 5;
+
+    const updates = {};
+
+    if (correct) {
+      updates.points = currentPoints + points;
+
+      const nextUnlocked = Math.max(currentUnlocked, order + 1);
+      updates.progress = { ...progress, [pathId]: nextUnlocked };
+      livesAfter = currentLives;
+    } else {
+      const nextLives = Math.max(currentLives - 1, 0);
+      updates.lives = nextLives;
+      livesAfter = nextLives;
+    }
+
+    transaction.set(userRef, updates, { merge: true });
+  });
+
+  return livesAfter;
+}
+
+export async function resetLives(uid) {
+  await setDoc(doc(db, "users", uid), { lives: 5 }, { merge: true });
 }
