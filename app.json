@@ -27,7 +27,13 @@
     },
     "plugins": [
       "expo-font",
-      "expo-web-browser"
+      "expo-web-browser",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "PathScript membutuhkan akses galeri untuk mengganti foto profil kamu."
+        }
+      ]
     ]
   }
 }

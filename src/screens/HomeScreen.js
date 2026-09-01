@@ -24,7 +24,7 @@ const PATH_ICONS = {
 };
 
 export default function HomeScreen({ navigation }) {
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
   const [paths, setPaths] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
@@ -52,7 +52,14 @@ export default function HomeScreen({ navigation }) {
     <View style={styles.container}>
       <View style={styles.header}>
         <View style={styles.avatar}>
-          <Ionicons name="person" size={22} color="#fff" />
+          {profile?.photoBase64 ? (
+            <Image
+              source={{ uri: profile.photoBase64 }}
+              style={styles.avatarImage}
+            />
+          ) : (
+            <Ionicons name="person" size={22} color="#fff" />
+          )}
         </View>
         <View style={{ marginLeft: 12 }}>
           <Text style={styles.welcome}>WELCOME BACK</Text>
@@ -173,6 +180,11 @@ const styles = StyleSheet.create({
     backgroundColor: colors.primary,
     alignItems: "center",
     justifyContent: "center",
+  },
+  avatarImage: {
+    width: 50,
+    height: 50,
+    borderRadius: 50,
   },
   welcome: {
     color: colors.textMuted,

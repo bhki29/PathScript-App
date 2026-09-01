@@ -16,6 +16,7 @@ export async function registerWithEmail(email, password, username) {
       username,
       email,
       points: 0,
+      activity: {},
       createdAt: serverTimestamp(),
     });
   } catch (firestoreError) {

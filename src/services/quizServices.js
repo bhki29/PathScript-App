@@ -10,6 +10,7 @@ import {
   runTransaction,
 } from "firebase/firestore";
 import { db } from "../config/firebase";
+import { getLocalDateKey } from "../utils/date";
 
 export async function getLearningPaths() {
   const snap = await getDocs(collection(db, "learningPaths"));
@@ -90,6 +91,14 @@ export async function submitAnswer(uid, pathId, order, points, correct) {
       updates.points = currentPoints + points;
       const nextUnlocked = Math.max(currentUnlocked, order + 1);
       updates.progress = { ...progress, [pathId]: nextUnlocked };
+
+      const activity = data.activity || {};
+      const todayKey = getLocalDateKey();
+      updates.activity = {
+        ...activity,
+        [todayKey]: (activity[todayKey] || 0) + points,
+      };
+
       livesAfter = currentLives;
     } else {
       const nextLives = Math.max(currentLives - 1, 0);
