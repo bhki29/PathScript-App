@@ -59,7 +59,55 @@ PathScript-app/
 
 2. **Konfigurasi Firebase**
 
-   Project ini memakai Firebase Authentication (Email/Password) dan Cloud Firestore. Konfigurasi project sudah ada di `src/config/firebase.js`. Jika ingin memakai project Firebase sendiri, ganti nilai `firebaseConfig` di file tersebut sesuai project Firebase kamu, lalu aktifkan **Authentication > Email/Password** dan **Firestore Database** di Firebase Console (Storage tidak dibutuhkan).
+   Project ini memakai Firebase Authentication (Email/Password) dan Cloud Firestore. File `src/config/firebase.js` **tidak ikut ter-commit ke repository** (lihat `.gitignore`) karena berisi kredensial project. Buat file `src/config/firebase.js` sendiri dengan isi berikut, lalu isi `firebaseConfig` sesuai project Firebase kamu (Project Settings > General > Your apps):
+
+   ```javascript
+   import { initializeApp, getApps, getApp } from "firebase/app";
+   import {
+     initializeAuth,
+     getReactNativePersistence,
+     getAuth,
+   } from "firebase/auth";
+   import { initializeFirestore, getFirestore } from "firebase/firestore";
+   import AsyncStorage from "@react-native-async-storage/async-storage";
+
+   //masukan api key yang sudah dibuat di firebase disini
+   const firebaseConfig = {
+     apiKey: "",
+     authDomain: "",
+     projectId: "",
+     storageBucket: "",
+     messagingSenderId: "",
+     appId: "",
+   };
+
+   const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
+
+   export const auth = (() => {
+     try {
+       return initializeAuth(app, {
+         persistence: getReactNativePersistence(AsyncStorage),
+       });
+     } catch (e) {
+       return getAuth(app);
+     }
+   })();
+
+   export const db = (() => {
+     try {
+       return initializeFirestore(app, {
+         experimentalForceLongPolling: true,
+         useFetchStreams: false,
+       });
+     } catch (e) {
+       return getFirestore(app);
+     }
+   })();
+
+   export default app;
+   ```
+
+   Setelah itu, aktifkan **Authentication > Email/Password** dan **Firestore Database** di Firebase Console (Storage tidak dibutuhkan).
 
 3. **(Opsional) Seed data learning path & soal**
 
@@ -86,7 +134,7 @@ PathScript-app/
 ## Notes
 
 - **Tanpa Firebase Storage** — Fitur edit foto profil sengaja tidak memakai Firebase Storage karena membutuhkan paket berbayar (Blaze). Sebagai gantinya, foto di-resize ke ±400px, dikompres, lalu disimpan sebagai string base64 pada dokumen `users/{uid}.photoBase64` di Firestore. Ada batas ukuran (~700KB) agar tidak melebihi limit dokumen Firestore (1MB).
-- **Kredensial Firebase** — `firebaseConfig` di `src/config/firebase.js` saat ini ditulis langsung di kode (hardcoded). Untuk deployment produksi, sebaiknya dipindahkan ke environment variable (`app.config.js` + `EXPO_PUBLIC_*`) agar lebih mudah dikelola per environment.
+- **Kredensial Firebase** — `src/config/firebase.js` **tidak ada di repository** (masuk `.gitignore`) karena berisi `firebaseConfig` dengan kredensial project. Setiap developer wajib membuat file ini sendiri secara lokal mengikuti template di bagian _Get started_ di atas. Jangan pernah commit file ini dengan value asli.
 - **`scripts/serviceAccountKey.json`** — berisi kredensial admin Firebase, pastikan file ini masuk `.gitignore` dan tidak pernah ter-push ke repository publik.
 - **Weekly Progress** — data aktivitas mingguan mengikuti waktu lokal perangkat pengguna (bukan UTC), lihat `src/utils/date.js`.
 - Dibangun dengan **Expo SDK 54** — jika menambah native module baru, jalankan `npx expo install <package>` agar versinya tetap kompatibel.
