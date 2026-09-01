@@ -1,6 +1,7 @@
 import {
   collection,
   getDocs,
+  getCountFromServer,
   getDoc,
   orderBy,
   query,
@@ -13,6 +14,39 @@ import { db } from "../config/firebase";
 export async function getLearningPaths() {
   const snap = await getDocs(collection(db, "learningPaths"));
   return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+}
+
+export async function getLearningPathsWithProgress(uid) {
+  const paths = await getLearningPaths();
+
+  const userSnap = uid ? await getDoc(doc(db, "users", uid)) : null;
+  const progressMap =
+    userSnap && userSnap.exists() ? userSnap.data().progress || {} : {};
+
+  const withProgress = await Promise.all(
+    paths.map(async (path) => {
+      let totalQuestions = 0;
+      try {
+        const countSnap = await getCountFromServer(
+          collection(db, "learningPaths", path.id, "questions"),
+        );
+        totalQuestions = countSnap.data().count;
+      } catch (err) {
+        totalQuestions = 0;
+      }
+
+      const unlockedOrder = progressMap[path.id] || 1;
+      const completed = Math.max(unlockedOrder - 1, 0);
+      const percent =
+        totalQuestions > 0
+          ? Math.min(Math.round((completed / totalQuestions) * 100), 100)
+          : 0;
+
+      return { ...path, percent, totalQuestions, completed };
+    }),
+  );
+
+  return withProgress;
 }
 
 export async function getQuestions(pathId) {
@@ -54,7 +88,6 @@ export async function submitAnswer(uid, pathId, order, points, correct) {
 
     if (correct) {
       updates.points = currentPoints + points;
-
       const nextUnlocked = Math.max(currentUnlocked, order + 1);
       updates.progress = { ...progress, [pathId]: nextUnlocked };
       livesAfter = currentLives;
