@@ -15,25 +15,18 @@ import { Ionicons } from "@expo/vector-icons";
 import colors from "../theme/colors";
 import { db } from "../config/firebase";
 import { useAuth } from "../context/AuthContext";
-import { submitAnswer, getLives } from "../services/quizServices";
+import { submitAnswer } from "../services/quizServices";
 
 export default function QuizQuestionScreen({ route, navigation }) {
   const { pathId, questionId, title, order } = route.params;
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
   const [question, setQuestion] = useState(null);
   const [selected, setSelected] = useState(null);
   const [loading, setLoading] = useState(true);
   const [resultVisible, setResultVisible] = useState(false);
   const [isCorrect, setIsCorrect] = useState(false);
-  const [lives, setLives] = useState(5);
 
-  useEffect(() => {
-    if (user) {
-      getLives(user.uid)
-        .then(setLives)
-        .catch(() => {});
-    }
-  }, [user]);
+  const lives = typeof profile?.lives === "number" ? profile.lives : 5;
 
   useEffect(() => {
     const ref = doc(db, "learningPaths", pathId, "questions", questionId);
@@ -61,14 +54,13 @@ export default function QuizQuestionScreen({ route, navigation }) {
 
     if (user) {
       try {
-        const livesAfter = await submitAnswer(
+        await submitAnswer(
           user.uid,
           pathId,
           question.order ?? order,
           question.points || 5,
           correct,
         );
-        setLives(livesAfter);
       } catch (err) {
         console.error("Gagal menyimpan progress:", err);
       }

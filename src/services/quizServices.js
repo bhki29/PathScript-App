@@ -115,3 +115,35 @@ export async function submitAnswer(uid, pathId, order, points, correct) {
 export async function resetLives(uid) {
   await setDoc(doc(db, "users", uid), { lives: 5 }, { merge: true });
 }
+
+export class InsufficientPointsError extends Error {
+  constructor() {
+    super("INSUFFICIENT_POINTS");
+    this.name = "InsufficientPointsError";
+  }
+}
+
+/* Logic: Exchange points for extra lives. Executed in a transaction */
+export async function exchangeHeart(uid, hearts, cost) {
+  const userRef = doc(db, "users", uid);
+
+  await runTransaction(db, async (transaction) => {
+    const snap = await transaction.get(userRef);
+    const data = snap.exists() ? snap.data() : {};
+    const currentPoints = data.points || 0;
+    const currentLives = typeof data.lives === "number" ? data.lives : 5;
+
+    if (currentPoints < cost) {
+      throw new InsufficientPointsError();
+    }
+
+    transaction.set(
+      userRef,
+      {
+        points: currentPoints - cost,
+        lives: currentLives + hearts,
+      },
+      { merge: true },
+    );
+  });
+}
