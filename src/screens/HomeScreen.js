@@ -90,7 +90,7 @@ export default function HomeScreen({ navigation }) {
         <FlatList
           data={filteredPaths}
           keyExtractor={(item) => item.id}
-          contentContainerStyle={{ paddingBottom: 24 }}
+          contentContainerStyle={{ paddingBottom: 110 }}
           ListEmptyComponent={
             <Text style={styles.emptyText}>
               {search

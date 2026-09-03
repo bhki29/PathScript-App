@@ -78,7 +78,7 @@ export default function QuizPathScreen({ route, navigation }) {
           data={questions}
           keyExtractor={(item) => item.id}
           numColumns={5}
-          contentContainerStyle={{ paddingBottom: 24 }}
+          contentContainerStyle={{ paddingBottom: 110 }}
           columnWrapperStyle={{
             justifyContent: "space-between",
             marginBottom: 14,

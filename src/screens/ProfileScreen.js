@@ -223,7 +223,7 @@ const styles = StyleSheet.create({
   },
   barCol: { alignItems: "center", flex: 1 },
   bar: {
-    width: 40,
+    width: "70%",
     borderRadius: 1,
     backgroundColor: colors.success || "#1DBC8F",
   },
@@ -240,7 +240,7 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     alignItems: "center",
     marginTop: "auto",
-    marginBottom: 20,
+    marginBottom: 110,
   },
   logoutText: { color: "#fff", fontWeight: "700" },
 });
